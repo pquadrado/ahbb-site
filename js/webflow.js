@@ -13971,36 +13971,33 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function sendEmail(){
-  const params ={
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    cidade: document.getElementById("cidade").value,
-    telefone: document.getElementById("telefone").value,
-    mensagem: document.getElementById("mensagem").value
+document.getElementById('email-form').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const formData = {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      cidade: document.getElementById('cidade').value,
+      telefone: document.getElementById('telefone').value,
+      mensagem: document.getElementById('mensagem').value
   };
 
-  fetch("http://localhost:3002/send-email", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name: params.name,
-      email: params.email,
-      cidade: params.cidade,
-      telefone: params.telefone,
-      mensagem: params.mensagem,
-    })
-  }).then(() => {
-    alert("Mensagem Enviada com Sucesso!")
-  })
-  .catch(() => {
-    alert("Erro ao Enviar a Mensagem!")
-  })
-}
+  try {
+      const response = await fetch('http://localhost:8080/enviar-email', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+      });
 
-document.getElementById("email-form").addEventListener("submit", function(event){
-  event.preventDefault()
-  sendEmail()
-})
+      if (response.ok) {
+          alert('Email enviado com sucesso!');
+      } else {
+          alert('Erro ao enviar email.');
+      }
+  } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao enviar email.');
+  }
+});

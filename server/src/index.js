@@ -1,9 +1,9 @@
-const nodemailer = require("nodemailer")
-const express = require("express")
-const cors = require("cors")
-require("dotenv").config()
+require("dotenv").config();
+const express = require("express");
+const nodemailer = require("nodemailer");
+const cors = require("cors");
 
-const app = express()
+const app = express();
 app.use(express.json());
 
 app.use(cors({
@@ -16,37 +16,37 @@ const smtp = nodemailer.createTransport({
   secure: true,
   auth: {
     user: process.env.USER,
-    pass: process.env.PASS
-  }
+    pass: process.env.PASS,
+  },
 });
 
-app.post("/send-email", (req, res) => {
+app.post('/enviar-email', async (req, res) => {
   const { name, email, cidade, telefone, mensagem } = req.body;
 
   const configEmail = {
     from: process.env.USER,
     to: process.env.USER,
-    subject: "Nova mensagem enviada pelo site da AHBB",
+    subject: "Você tem uma nova mensagem do site da AHBB!",
     html: `
-      <h2>Você tem uma nova mensagem enviada pelo site da AHBB.</h2><br> 
-      <h4>Informações do Cliente:</h4><br> 
-      <strong>Nome:</strong> <p>${name}</p><br> 
-      <strong>E-mail:</strong> <p>${email}</p><br> 
-      <strong>Cidade:</strong> <p>${cidade}</p><br> 
-      <strong>Telefone:</strong> <p>${telefone}</p><br> 
-      <strong>Mensagem:</strong> <p>${mensagem}</p><br>`
+      <strong><h2>Nova mensagem enviada pelo formulário do AHBB</h2></strong><br><br>
+      <h4>Informações do usuário:</h4><br>
+      <strong>Nome: </strong><p>${name}</p><br>
+      <strong>E-mail: </strong><p>${email}</p><br>
+      <strong>Cidade: </strong><p>${cidade}</p><br>
+      <strong>Telefone: </strong><p>${telefone}</p><br>
+      <strong>Mensagem: </strong><p>${mensagem}</p>
+    `,
   };
 
-  smtp.sendMail(configEmail, (error, info) => {
-    if (error) {
-      console.error("Erro ao enviar o e-mail:", error);
-      return res.status(500).send({ message: "Erro ao enviar o e-mail", error });
-    }
-    res.status(200).send({ message: "E-mail enviado com sucesso!", info });
-  });
+  try {
+    await smtp.sendMail(configEmail);
+    res.status(200).send('Email enviado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao enviar email:', error);
+    res.status(500).send('Erro ao enviar email.');
+  }
 });
 
-app.listen(3002, () => {
-  console.log("Projeto rodando na porta 3002");
+app.listen(8080, () => {
+  console.log("Projeto rodando");
 });
-
