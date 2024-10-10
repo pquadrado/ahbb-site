@@ -13,7 +13,7 @@ app.use(cors({
 const smtp = nodemailer.createTransport({
   host: process.env.HOST,
   port: process.env.PORT,
-  secure: true,
+  secure: process.env.SECURE,
   auth: {
     user: process.env.USER,
     pass: process.env.PASS,
